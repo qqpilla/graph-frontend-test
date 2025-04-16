@@ -1,0 +1,1 @@
+export { makeGetRequest } from "./makeGetRequest"

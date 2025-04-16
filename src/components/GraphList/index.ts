@@ -1,1 +1,1 @@
-export { GraphList } from "./GraphList"
+export { GraphList } from "./ui/GraphList"
