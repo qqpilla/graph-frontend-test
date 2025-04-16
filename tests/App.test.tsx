@@ -4,7 +4,7 @@ import { render, within, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import graphs from "../src/mocks/graphs";
-import { App } from "../src/App";
+import { App } from "../src/app/App";
 
 function setup(jsx: JSX.Element) {
     return {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { makeGetRequest } from "../shared/makeGetRequest"
+import { makeGetRequest } from "../../shared/makeGetRequest"
 
 export function useLoadGraphs() {
     const [graphsIds, setGraphsIds] = useState<number[]>([])
