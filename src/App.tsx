@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import "./App.css";
+import { GraphList } from "./GraphList/GraphList"
+import "./App.css"
 
 export const App = () => {
-    return <div>Write your app here.</div>;
+    return <GraphList />
 }
