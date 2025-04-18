@@ -5,9 +5,11 @@ import "./App.css"
 
 export const App = () => {
     return (
-        <GraphContextProvider>
-            <GraphList />
-            <DisplayedGraph />
-        </GraphContextProvider>
+        <div className="app-container">
+            <GraphContextProvider>
+                <GraphList />
+                <DisplayedGraph />
+            </GraphContextProvider>
+        </div>
     )
 }
