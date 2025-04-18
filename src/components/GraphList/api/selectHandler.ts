@@ -1,5 +1,5 @@
 import { ChangeEvent } from "react"
-import { Graph } from "../../../shared/graph"
+import { Graph } from "../../../shared/graph/interfaces"
 import { makeGetRequest } from "../../../shared/api"
 
 type handleSelectChangeParams = {

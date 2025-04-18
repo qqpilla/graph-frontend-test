@@ -1,5 +1,6 @@
 import { ReactNode, useState } from "react"
-import { Graph, GraphContext } from "../../shared/graph"
+import { GraphContext } from "../../shared/graph"
+import { Graph } from "../../shared/graph/interfaces"
 
 type GraphContextProviderParams = {
     children: ReactNode

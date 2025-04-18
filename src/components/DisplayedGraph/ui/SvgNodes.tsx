@@ -1,4 +1,4 @@
-import { Graph } from "../../../shared/graph"
+import { Graph } from "../../../shared/graph/interfaces"
 
 const nodeWidth = 140
 const nodeHeight = 80

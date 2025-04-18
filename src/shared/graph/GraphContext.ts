@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react"
-import { Graph } from "./Graph"
+import { Graph } from "./interfaces"
 
 type GraphContextType = {
     currentGraph: Graph | null

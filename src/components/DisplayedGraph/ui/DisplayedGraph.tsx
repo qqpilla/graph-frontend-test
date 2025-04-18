@@ -1,4 +1,4 @@
-import { Graph, useGraphContext } from "../../../shared/graph"
+import { useGraphContext } from "../../../shared/graph"
 import { calcViewSize, SvgNodes } from "./SvgNodes"
 
 export function DisplayedGraph() {
