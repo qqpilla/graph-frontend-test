@@ -1,57 +1,57 @@
-import { Graph } from "../../../shared/graph/interfaces"
+import { Node } from "../../../shared/graph/interfaces"
 
 const nodeWidth = 140
 const nodeHeight = 80
 const nodesGap = 30
 const containerMargin = 10 // Нужен для корректного отображения границ <rect>-элементов
 
-export function SvgNodes({ graph }: { graph: Graph | null }) {
-    if (!graph) {
-        return <></>
-    }
-
-    return graph.nodes.map((node, ind) => {
-        const rectX = containerMargin + ind * (nodeWidth + nodesGap)
-        const rectY = containerMargin
-
+export function SvgNodes({ graphColumns }: { graphColumns: Node[][] }) {
+    return graphColumns.map((column, cInd) => {
         return (
-            <g id={ind.toString()}>
-                <rect
-                    key={ind}
-                    x={rectX}
-                    y={rectY}
-                    height={nodeHeight}
-                    width={nodeWidth}
-                    stroke="black"
-                    strokeWidth="2px"
-                    fill="white"
-                ></rect>
-                <text
-                    x={rectX + nodeWidth / 2}
-                    y={rectY + nodeHeight / 2}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                >
-                    {node.name}
-                </text>
+            <g key={cInd}>
+                {column.map((node, nInd) => {
+                    const rectX = cInd * (nodeWidth + nodesGap) + containerMargin
+                    const rectY = nInd * (nodeHeight + nodesGap) + containerMargin
+
+                    return (
+                        <g key={node.id} id={`node${node.id.toString()}`}>
+                            <rect
+                                x={rectX}
+                                y={rectY}
+                                height={nodeHeight}
+                                width={nodeWidth}
+                                stroke="black"
+                                strokeWidth="2px"
+                                fill="white"
+                            ></rect>
+                            <text
+                                x={rectX + nodeWidth / 2}
+                                y={rectY + nodeHeight / 2}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                            >
+                                {node.name}
+                            </text>
+                        </g>
+                    )
+                })}
             </g>
         )
     })
 }
 
-export function calcViewSize(graph: Graph | null): {
+export function calcViewSize(graphColumns: Node[][]): {
     viewX: number
     viewY: number
 } {
-    if (!graph) {
-        return { viewX: 0, viewY: 0 }
-    }
+    let graphXSize = graphColumns.length
+    let graphYSize = 0
+    graphColumns.forEach((column) => {
+        graphYSize = Math.max(graphYSize, column.length)
+    })
 
-    let viewX =
-        graph.nodes.length * nodeWidth +
-        (graph.nodes.length - 1) * nodesGap +
-        containerMargin * 2
-    let viewY = nodeHeight + containerMargin * 2
+    let viewX = graphXSize * nodeWidth + (graphXSize - 1) * nodesGap + containerMargin * 2
+    let viewY = graphYSize * nodeHeight + (graphYSize - 1) * nodesGap + containerMargin * 2
 
     return { viewX, viewY }
 }
