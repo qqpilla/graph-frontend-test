@@ -1,17 +1,28 @@
 import { Node } from "../../../shared/graph/interfaces"
+import { SvgEdges } from "./SvgEdges"
 
 const nodeWidth = 140
-const nodeHeight = 80
-const nodesGap = 30
+const nodeHeight = 70
+const nodesGap = 40
 const containerMargin = 10 // Нужен для корректного отображения границ <rect>-элементов
 
-export function SvgNodes({ graphColumns }: { graphColumns: Node[][] }) {
-    return graphColumns.map((column, cInd) => {
+type graphColumnsParams = {
+    graphColumns: Node[][]
+}
+
+export function SvgNodes({ graphColumns }: graphColumnsParams) {
+    const nodesCenters: Map<number, { x: number; y: number }> = new Map()
+
+    const nodes = graphColumns.map((column, cInd) => {
         return (
             <g key={cInd}>
                 {column.map((node, nInd) => {
                     const rectX = cInd * (nodeWidth + nodesGap) + containerMargin
                     const rectY = nInd * (nodeHeight + nodesGap) + containerMargin
+                    const rectCenterX = rectX + nodeWidth / 2
+                    const rectCenterY = rectY + nodeHeight / 2
+
+                    nodesCenters.set(node.id, { x: rectCenterX, y: rectCenterY })
 
                     return (
                         <g key={node.id} id={`node${node.id.toString()}`}>
@@ -22,11 +33,13 @@ export function SvgNodes({ graphColumns }: { graphColumns: Node[][] }) {
                                 width={nodeWidth}
                                 stroke="black"
                                 strokeWidth="2px"
+                                rx="30px"
+                                ry="50px"
                                 fill="white"
                             ></rect>
                             <text
-                                x={rectX + nodeWidth / 2}
-                                y={rectY + nodeHeight / 2}
+                                x={rectCenterX}
+                                y={rectCenterY}
                                 textAnchor="middle"
                                 dominantBaseline="middle"
                             >
@@ -38,6 +51,13 @@ export function SvgNodes({ graphColumns }: { graphColumns: Node[][] }) {
             </g>
         )
     })
+
+    return (
+        <>
+            <SvgEdges nodesCenters={nodesCenters} />
+            {nodes}
+        </>
+    )
 }
 
 export function calcViewSize(graphColumns: Node[][]): {
