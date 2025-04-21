@@ -1,6 +1,9 @@
 import { useGraphContext } from "../../../shared/graph"
 import { getGraphColumns } from "../model/getGraphColumns"
-import { calcViewSize, SvgNodes } from "./SvgNodes"
+import { getNodesPositions } from "../model/getNodesPositions"
+import { calcViewSize } from "../model/calcViewSize"
+import { SvgNodes } from "./SvgNodes"
+import { SvgEdges } from "./SvgEdges"
 
 export function DisplayedGraph() {
     const { currentGraph } = useGraphContext()
@@ -10,6 +13,7 @@ export function DisplayedGraph() {
     }
 
     const graphColumns = getGraphColumns(currentGraph)
+    const nodesPositions = getNodesPositions(graphColumns)
     const { viewX, viewY } = calcViewSize(graphColumns)
 
     return (
@@ -18,7 +22,8 @@ export function DisplayedGraph() {
             viewBox={`0 0 ${viewX} ${viewY}`}
             width={`${viewX}px`}
         >
-            <SvgNodes graphColumns={graphColumns} />
+            <SvgEdges nodesPositions={nodesPositions} graphEdges={currentGraph.edges} />
+            <SvgNodes nodesPositions={nodesPositions} graphColumns={graphColumns} />
         </svg>
     )
 }
