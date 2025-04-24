@@ -1,5 +1,5 @@
 import { useGraphContext } from "../../../shared/graph"
-import { getGraphColumns } from "../model/getGraphColumns"
+import { getGraphColumnsSorted } from "../model/getGraphColumns"
 import { getNodesPositions } from "../model/getNodesPositions"
 import { calcViewSize } from "../model/calcViewSize"
 import { SvgNodes } from "./SvgNodes"
@@ -12,7 +12,7 @@ export function DisplayedGraph() {
         return <h2>Граф не выбран</h2>
     }
 
-    const graphColumns = getGraphColumns(currentGraph)
+    const graphColumns = getGraphColumnsSorted(currentGraph)
     const nodesPositions = getNodesPositions(graphColumns)
     const { viewX, viewY } = calcViewSize(graphColumns)
 

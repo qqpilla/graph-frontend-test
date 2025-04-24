@@ -1,4 +1,12 @@
 import { Graph, Node } from "../../../shared/graph/interfaces"
+import { sortByWeightedMedianHeuristic } from "../model/sortByWeightedMedianHeuristic"
+
+export function getGraphColumnsSorted(graph: Graph) {
+    return sortByWeightedMedianHeuristic({
+        graphColumns: getGraphColumns(graph),
+        graphEdges: graph.edges,
+    })
+}
 
 export function getGraphColumns(graph: Graph) {
     const columns: Node[][] = []
@@ -26,7 +34,7 @@ export function getGraphColumns(graph: Graph) {
             nextColumn.push(...toNodes)
             remainingNodesCount -= toNodes.length
         })
-        
+
         fromColumnInd++
         columns.push(nextColumn)
     }
