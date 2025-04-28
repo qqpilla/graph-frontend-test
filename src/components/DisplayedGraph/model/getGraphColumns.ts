@@ -2,10 +2,10 @@ import { Graph, Node } from "../../../shared/graph/interfaces"
 import { sortByWeightedMedianHeuristic } from "../model/sortByWeightedMedianHeuristic"
 
 export function getGraphColumnsSorted(graph: Graph) {
-    return sortByWeightedMedianHeuristic({
-        graphColumns: getGraphColumns(graph),
-        graphEdges: graph.edges,
-    })
+    return sortByWeightedMedianHeuristic(
+        getGraphColumns(graph),
+        graph.edges,
+    )
 }
 
 export function getGraphColumns(graph: Graph) {

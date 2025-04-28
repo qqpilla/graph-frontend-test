@@ -1,21 +1,16 @@
 import { Edge, Node } from "../../../shared/graph/interfaces"
 
-type sortByWeightedMedianHeuristicParams = {
-    graphColumns: Node[][]
-    graphEdges: Edge[]
-    numIterations?: number
-}
-
 // Алгоритм описан в статье:
 // IEEE TRANSACTIONS ON SOFTWARE ENGINEERING, VOL. 19, NO. 3, MARCH 1993
 // "A Technique for Drawing Directed Graphs"
 // Emden R. Gansner, Eleftherios Koutsofios, Stephen C. North, and Kiem-Phong Vo
-export function sortByWeightedMedianHeuristic({
-    graphColumns,
-    graphEdges,
-    numIterations = 1,
-}: sortByWeightedMedianHeuristicParams): Node[][] {
-
+export function sortByWeightedMedianHeuristic(
+    graphColumns: Node[][],
+    graphEdges: Edge[],
+    numIterations: number = 1,
+): Node[][] {
+    // Сортировка узлов в столбце с индексом cInd таким образом,
+    // чтобы они были как можно ближе к своим медианам из соседнего столбца
     const columnPass = (cInd: number, prevCInd: number) => {
         const medians: Map<number, number> = new Map()
 
@@ -34,33 +29,35 @@ export function sortByWeightedMedianHeuristic({
     }
 
     for (let iteration = 0; iteration < numIterations; iteration++) {
+        // Прямой проход
         for (let cInd = 1; cInd < graphColumns.length; cInd++) {
             columnPass(cInd, cInd - 1)
         }
+        trySwitchingNodes(graphColumns, graphEdges)
+
+        // Обратный проход
         for (let cInd = graphColumns.length - 2; cInd >= 0; cInd--) {
             columnPass(cInd, cInd + 1)
         }
+        trySwitchingNodes(graphColumns, graphEdges)
     }
 
     return graphColumns
 }
 
+// Поиск медианы для узла с id === nodeId по соседнему столбцу neighbours
 function calculateMedianPosition(
     nodeId: number,
     neighbours: Node[],
     graphEdges: Edge[]
 ): number {
-    
-    // Индексы (позиции) узлов в соседней колонке, связанных с текущим узлом
+    // Индексы (позиции) узлов, связанных с текущим узлом, в соседнем столбце
     const adjPositions: number[] = []
     neighbours.forEach((neighbour, ind) => {
-        if (
-            graphEdges.some(
-                (edge) =>
-                    (edge.fromId === neighbour.id && edge.toId === nodeId) ||
-                    (edge.toId === neighbour.id && edge.fromId === nodeId)
-            )
-        ) {
+        if (graphEdges.some((edge) =>
+            (edge.fromId === neighbour.id && edge.toId === nodeId) ||
+            (edge.toId === neighbour.id && edge.fromId === nodeId)
+        )) {
             adjPositions.push(ind)
         }
     })
@@ -90,4 +87,101 @@ function calculateMedianPosition(
         (firstMedian * lowerDistance + secondMedian * upperDistance) /
         (lowerDistance + upperDistance)
     )
+}
+
+// Попытка улучшить результат путём переставления соседних узлов во всех столбцах
+function trySwitchingNodes(graphColumns: Node[][], graphEdges: Edge[]) {
+    const maxIterationsWithoutImprovement = 3
+    let iterationsWithoutImprovement = 0
+    let hasImproved
+    let hasSwitchedWithNoResult
+
+    // Пока перестановки дают улучшения или пока перестановок без улучшений было не больше заданного числа
+    // (перестановки без улучшений могут в итоге помочь выйти из локального оптимума и прийти в глобальный)
+    while (hasImproved || iterationsWithoutImprovement < maxIterationsWithoutImprovement) {
+        hasImproved = false
+        hasSwitchedWithNoResult = false
+
+        graphColumns.forEach((column, cInd) => {
+            for (let nInd = 0; nInd < column.length - 1; nInd++) {
+                const currentNode = column[nInd]
+                const nextNode = column[nInd + 1]
+                const intersectionsCN = countEdgeIntersectionsAroundColumn(cInd, graphColumns, graphEdges)
+
+                column[nInd] = nextNode
+                column[nInd + 1] = currentNode
+                const intersectionsNC = countEdgeIntersectionsAroundColumn(cInd, graphColumns, graphEdges)
+
+                if (intersectionsNC < intersectionsCN) {
+                    hasImproved = true
+                    iterationsWithoutImprovement = 0
+                } else if (intersectionsNC === intersectionsCN) {
+                    hasSwitchedWithNoResult = true
+                } else {
+                    column[nInd] = currentNode
+                    column[nInd + 1] = nextNode
+                }
+            }
+        })
+
+        if (!hasImproved) {
+            if (hasSwitchedWithNoResult) {
+                iterationsWithoutImprovement++
+            } else {
+                // Не случилось ни одной перестановки, т.к. они все
+                // увеличивали количество пересечений рёбер
+                break
+            }
+        }
+    }
+}
+
+// Подсчёт количества пересечений слева и справа от заданного столбца
+function countEdgeIntersectionsAroundColumn(
+    columnInd: number,
+    graphColumns: Node[][],
+    graphEdges: Edge[]
+) {
+    let intersections = 0
+    
+    const countEdgeIntersections = (columnFrom: Node[], columnTo: Node[]) => {
+        // Все рёбра, идущие из columnFrom в columnTo
+        const edges = graphEdges.filter((edge) =>
+            columnFrom.some((node) => node.id === edge.fromId)
+        )
+
+        // Можно оптимизировать, применив Sweep Line Algorithm
+        for (let i = 0; i < edges.length - 1; i++) {
+            for (let j = i + 1; j < edges.length; j++) {
+                const edgeA = edges[i]
+                const edgeB = edges[j]
+
+                const edgeANodeFromPosition = columnFrom.findIndex((node) => node.id === edgeA.fromId) 
+                const edgeANodeToPosition = columnTo.findIndex((node) => node.id === edgeA.toId)
+                const edgeBNodeFromPosition = columnFrom.findIndex((node) => node.id === edgeB.fromId) 
+                const edgeBNodeToPosition = columnTo.findIndex((node) => node.id === edgeB.toId)
+             
+                if (edgeANodeFromPosition < edgeBNodeFromPosition && 
+                    edgeANodeToPosition > edgeBNodeToPosition ||
+                    edgeANodeFromPosition > edgeBNodeFromPosition && 
+                    edgeANodeToPosition < edgeBNodeToPosition
+                ) {
+                    intersections++
+                }
+            }
+        }
+
+    }
+
+    const prevColumnInd = columnInd - 1
+    if (prevColumnInd >= 0) {
+        countEdgeIntersections(graphColumns[prevColumnInd], graphColumns[columnInd])
+    }
+
+    const nextColumnInd = columnInd + 1
+    if (nextColumnInd < graphColumns.length) {
+        countEdgeIntersections(graphColumns[columnInd], graphColumns[nextColumnInd])
+    }
+
+    return intersections
 }
