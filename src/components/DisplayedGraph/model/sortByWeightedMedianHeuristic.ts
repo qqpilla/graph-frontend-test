@@ -91,13 +91,15 @@ function calculateMedianPosition(
 
 // Попытка улучшить результат путём переставления соседних узлов во всех столбцах
 function trySwitchingNodes(graphColumns: Node[][], graphEdges: Edge[]) {
-    const maxIterationsWithoutImprovement = 3
+    const maxIterationsWithoutImprovement = 5
     let iterationsWithoutImprovement = 0
     let hasImproved
     let hasSwitchedWithNoResult
 
     // Пока перестановки дают улучшения или пока перестановок без улучшений было не больше заданного числа
     // (перестановки без улучшений могут в итоге помочь выйти из локального оптимума и прийти в глобальный)
+    // (это сложнее, но в идеале нужно допускать не только перестановки без улучшений, но и некоторое
+    // количество перестановок, приводящих к ухудшению - так вероятность выйти из локального оптимума выше)
     while (hasImproved || iterationsWithoutImprovement < maxIterationsWithoutImprovement) {
         hasImproved = false
         hasSwitchedWithNoResult = false
