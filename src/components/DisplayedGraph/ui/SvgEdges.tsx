@@ -7,19 +7,23 @@ type SvgEdgesParams = {
 }
 
 export function SvgEdges({ nodesPositions, graphEdges }: SvgEdgesParams) {
-    return graphEdges.map((edge) => {
-        const fromCoords = nodesPositions.get(edge.fromId) || { x: 0, y: 0 }
-        const toCoords = nodesPositions.get(edge.toId) || { x: 0, y: 0 }
+    return (
+        <g>
+            {graphEdges.map((edge) => {
+                const fromCoords = nodesPositions.get(edge.fromId) || { x: 0, y: 0 }
+                const toCoords = nodesPositions.get(edge.toId) || { x: 0, y: 0 }
 
-        return (
-            <line
-                key={`${edge.fromId}-${edge.toId}`}
-                x1={fromCoords.x + nodeWidth / 2}
-                y1={fromCoords.y + nodeHeight / 2}
-                x2={toCoords.x + nodeWidth / 2}
-                y2={toCoords.y + nodeHeight / 2}
-                stroke="black"
-            ></line>
-        )
-    })
+                return (
+                    <line
+                        key={`${edge.fromId}-${edge.toId}`}
+                        x1={fromCoords.x + nodeWidth}
+                        y1={fromCoords.y + nodeHeight / 2}
+                        x2={toCoords.x}
+                        y2={toCoords.y + nodeHeight / 2}
+                        stroke="black"
+                    ></line>
+                )
+            })}
+        </g>
+    )
 }
