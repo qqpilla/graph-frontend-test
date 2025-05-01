@@ -1,6 +1,6 @@
 import React from "react";
 import { it, expect } from "vitest";
-import { render, within, cleanup } from "@testing-library/react";
+import { render, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import graphs from "../src/mocks/graphs";
@@ -17,9 +17,13 @@ it("Приложение отображается", () => {
     render(<App />);
 });
 
-it("Есть выпадающий список со всеми доступными графами", () => {
+it("Есть выпадающий список со всеми доступными графами", async () => {
     const { getByRole } = setup(<App />);
-    const options = within(getByRole("combobox")).getAllByRole("option");
+
+    const combobox = await waitFor(() => getByRole("combobox"));
+    const options = within(combobox)
+        .getAllByRole("option")
+        .filter((option) => (option as HTMLOptionElement).value !== "");
 
     expect(options.length).toBe(graphs.length);
 });
@@ -28,7 +32,8 @@ it("Выбранный граф отображается после выбора
     const selectedGraph = 2;
     const { getByRole, findByText, user } = setup(<App />);
 
-    user.selectOptions(getByRole("combobox"), `${selectedGraph}`);
+    const combobox = await waitFor(() => getByRole("combobox"));
+    user.selectOptions(combobox, `${selectedGraph}`);
 
     for (let node of graphs[selectedGraph].nodes) {
         await findByText(node.name);
@@ -41,7 +46,8 @@ it("Узлы в простом графе организованы в столб
 
     const correctColumns = [["start"], ["foo", "bar"], ["end1", "end2"]];
 
-    user.selectOptions(getByRole("combobox"), `${selectedGraph}`);
+    const combobox = await waitFor(() => getByRole("combobox"));
+    user.selectOptions(combobox, `${selectedGraph}`);
 
     for (let idx = 0; idx < correctColumns.length; idx++) {
         const col = correctColumns[idx];
