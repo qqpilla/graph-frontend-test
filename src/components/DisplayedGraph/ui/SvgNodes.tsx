@@ -14,22 +14,15 @@ export function SvgNodes({ nodesPositions, graphColumns }: SvgNodesParams) {
 
                 return (
                     <g key={node.id} id={`node${node.id.toString()}`}>
-                        <rect
+                        <rect className="node"
                             x={x}
                             y={y}
                             height={nodeHeight}
                             width={nodeWidth}
-                            stroke="black"
-                            strokeWidth="2px"
-                            rx="30px"
-                            ry="50px"
-                            fill="white"
                         ></rect>
-                        <text
+                        <text className="node-text"
                             x={x + nodeWidth / 2}
                             y={y + nodeHeight / 2}
-                            textAnchor="middle"
-                            dominantBaseline="middle"
                         >
                             {node.name}
                         </text>

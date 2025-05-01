@@ -9,7 +9,11 @@ export function DisplayedGraph() {
     const { currentGraph } = useGraphContext()
 
     if (!currentGraph) {
-        return <h2>Граф не выбран</h2>
+        return (
+            <div className="graph-container">
+                <h2>Граф не выбран</h2>
+            </div>
+        ) 
     }
 
     const graphColumns = getGraphColumnsSorted(currentGraph)
@@ -17,13 +21,15 @@ export function DisplayedGraph() {
     const { viewX, viewY } = calcViewSize(graphColumns)
 
     return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox={`0 0 ${viewX} ${viewY}`}
-            width={`${viewX}px`}
-        >
-            <SvgEdges nodesPositions={nodesPositions} graphEdges={currentGraph.edges} />
-            <SvgNodes nodesPositions={nodesPositions} graphColumns={graphColumns} />
-        </svg>
+        <div className="graph-container">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox={`0 0 ${viewX} ${viewY}`}
+                width={`${viewX}px`}
+            >
+                <SvgEdges nodesPositions={nodesPositions} graphEdges={currentGraph.edges} />
+                <SvgNodes nodesPositions={nodesPositions} graphColumns={graphColumns} />
+            </svg>
+        </div>
     )
 }

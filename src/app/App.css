@@ -1,6 +1,81 @@
+:root {
+  --colorA: #fff6d3;
+  --colorB: #7c3f58;
+  --colorC: #f9a875;
+  --colorD: #eb6b6f;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  align-items: stretch;
+  gap: 10px;
 }
+
+.graph-list-container {
+  position: sticky;
+  top: 0;
+  background-color: var(--colorB);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+}
+
+.graph-list-container__loading {
+  color: var(--colorA);
+}
+
+select {
+  appearance: base-select;
+  width: 300px;
+  height: 30px;
+  padding-left: 10px;
+  font-size: 0.9rem;
+  border: 2px solid var(--colorB);
+  border-radius: 5px;
+  background: var(--colorC);
+  transition: 0.4s;
+}
+
+select:hover,
+select:focus {
+  border: 2px solid var(--colorD);
+}
+
+select::picker-icon {
+  color: var(--colorB);
+  transition: 0.4s rotate;
+}
+
+select:open::picker-icon {
+  rotate: 180deg;
+}
+
+.graph-container {
+  display: flex;
+  justify-content: center;
+}
+
+.graph-container h2 {
+  color: var(--colorB);
+}
+
+.node {
+  fill: var(--colorC);
+  stroke: var(--colorB);
+  stroke-width: 2px;
+  rx: 30px;
+  ry: 50px;
+}
+
+.node-text {
+  font-size: 1.2rem;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.edge {
+  stroke: var(--colorB);
+}
+
