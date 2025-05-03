@@ -61,12 +61,21 @@ select:open::picker-icon {
   color: var(--colorB);
 }
 
-.node {
+.node-rect {
   fill: var(--colorC);
   stroke: var(--colorB);
   stroke-width: 2px;
   rx: 30px;
   ry: 50px;
+}
+
+.node-rect {
+  cursor: grab;
+}
+
+.cursor_grabbing,
+.cursor_grabbing .node-rect {
+  cursor: grabbing;
 }
 
 .node-text {
