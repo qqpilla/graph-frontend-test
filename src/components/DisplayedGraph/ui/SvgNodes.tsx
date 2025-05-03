@@ -1,10 +1,11 @@
 import { Node } from "../../../shared/graph/interfaces"
 import { nodeWidth, nodeHeight } from "../model/svgParams"
+import type { dragParams } from "../model/nodeDragging/useNodeDrag";
 
 type SvgNodesParams = {
     nodesPositions: Map<number, { x: number; y: number }>
     graphColumns: Node[][]
-    startNodeDrag: (nodeId: number) => void
+    startNodeDrag: ({ nodeId, startNodePos, startCursorPos }: dragParams) => void
 }
 
 export function SvgNodes({
@@ -27,7 +28,14 @@ export function SvgNodes({
                             width={nodeWidth}
                             onMouseDown={(event) => {
                                 event.preventDefault()
-                                startNodeDrag(node.id)
+                                startNodeDrag({
+                                    nodeId: node.id,
+                                    startNodePos: { x, y },
+                                    startCursorPos: {
+                                        x: event.clientX,
+                                        y: event.clientY,
+                                    },
+                                })
                             }}
                         ></rect>
                         <text
