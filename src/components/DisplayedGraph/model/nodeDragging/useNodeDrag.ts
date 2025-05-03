@@ -8,7 +8,8 @@ export type dragParams = {
 }
 
 export function useNodeDrag(
-    graphSvgRef: React.RefObject<SVGSVGElement>
+    graphSvgRef: React.RefObject<SVGSVGElement>,
+    setNodePosition: (nodeId: number, newPos: { x: number, y: number }) => void
 ): [
     ({ nodeId, startNodePos, startCursorPos }: dragParams) => void, 
     () => void, 
@@ -35,9 +36,21 @@ export function useNodeDrag(
     const handleMouseMove = useCallback((event: MouseEvent<SVGSVGElement>) => {
         if (dragParams.current !== null) {
             event.preventDefault()
-            console.log(`Mouse moved to: ${event.clientX} ${event.clientY}`)
+
+            const deltaX = event.clientX - dragParams.current.startCursorPos.x
+            const deltaY = event.clientY - dragParams.current.startCursorPos.y
+
+            const newPos = {
+                x: dragParams.current.startNodePos.x + deltaX,
+                y: dragParams.current.startNodePos.y + deltaY,
+            }
+
+            setNodePosition(
+                dragParams.current.nodeId,
+                newPos
+            )
         }
-    }, [])
+    }, [setNodePosition])
 
     return [startNodeDrag, stopNodeDrag, handleMouseMove]
 }

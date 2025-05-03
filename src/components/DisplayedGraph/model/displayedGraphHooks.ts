@@ -1,6 +1,6 @@
 import { Node, Edge } from "../../../shared/graph/interfaces"
 import { useGraphContext } from "../../../shared/graph"
-import { useMemo, useState, useEffect } from "react"
+import { useMemo, useState, useEffect, useCallback } from "react"
 import { getGraphColumnsSorted } from "./getGraphColumns"
 import { getNodesPositions } from "./getNodesPositions"
 import { calcViewSize } from "./calcViewSize"
@@ -18,17 +18,26 @@ export function useCurrentGraph(): [Node[][], Edge[]] {
 
 type PositionsMap = Map<number, {x: number, y: number}>
 
-export function useNodesPositions(
-    graphColumns: Node[][]
-): [PositionsMap, React.Dispatch<React.SetStateAction<PositionsMap>>] {
+export function useNodesPositions(graphColumns: Node[][]): [
+    PositionsMap,
+    (nodeId: number, newPos: { x: number, y: number }) => void
+] {
     const [nodesPositions, setNodesPositions] = useState<PositionsMap>(new Map())
 
-    useEffect(
-        () => setNodesPositions(getNodesPositions(graphColumns)), 
-        [graphColumns]
+    useEffect(() => setNodesPositions(getNodesPositions(graphColumns)), [graphColumns])
+
+    const setNodePosition = useCallback(
+        (nodeId: number, newPos: { x: number; y: number }) => {
+            setNodesPositions((prevPositions) => {
+                const newPositions = new Map(prevPositions)
+                newPositions.set(nodeId, newPos)
+                return newPositions
+            })
+        },
+        []
     )
 
-    return [nodesPositions, setNodesPositions]
+    return [nodesPositions, setNodePosition]
 }
 
 export function useCalcViewSize(graphColumns: Node[][]): {
