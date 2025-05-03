@@ -67,9 +67,6 @@ select:open::picker-icon {
   stroke-width: 2px;
   rx: 30px;
   ry: 50px;
-}
-
-.node-rect {
   cursor: grab;
 }
 

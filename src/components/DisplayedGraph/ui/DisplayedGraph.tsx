@@ -3,7 +3,7 @@ import {
     useNodesPositions,
     useCalcViewSize,
 } from "../model/displayedGraphHooks"
-import { useNodeDrag } from "../model/nodeDragging/useNodeDrag"
+import { useNodeDrag } from "../model/useNodeDrag"
 import { SvgNodes } from "./SvgNodes"
 import { SvgEdges } from "./SvgEdges"
 import { useRef } from "react"

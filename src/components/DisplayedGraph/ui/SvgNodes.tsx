@@ -1,6 +1,6 @@
 import { Node } from "../../../shared/graph/interfaces"
 import { nodeWidth, nodeHeight } from "../model/svgParams"
-import type { dragParams } from "../model/nodeDragging/useNodeDrag";
+import type { dragParams } from "../model/useNodeDrag";
 
 type SvgNodesParams = {
     nodesPositions: Map<number, { x: number; y: number }>

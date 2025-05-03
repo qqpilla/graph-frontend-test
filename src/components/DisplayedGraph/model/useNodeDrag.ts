@@ -1,5 +1,4 @@
 import { MouseEvent, useCallback, useRef } from "react"
-import { useGraphSvgStyler } from "./useGraphSvgStyler"
 
 export type dragParams = {
     nodeId: number,
@@ -16,22 +15,21 @@ export function useNodeDrag(
     (event: MouseEvent<SVGSVGElement>) => void
 ] {
     const dragParams = useRef<dragParams | null>(null)
-    const [setCursorGrabbing, removeCursorGrabbing] = useGraphSvgStyler(graphSvgRef)
 
     const startNodeDrag = useCallback(
         ({ nodeId, startNodePos, startCursorPos }: dragParams) => {
             dragParams.current = { nodeId, startNodePos, startCursorPos }
-            setCursorGrabbing()
+            graphSvgRef.current?.classList.add("cursor_grabbing")
         },
-        [setCursorGrabbing]
+        []
     )
 
     const stopNodeDrag = useCallback(() => {
         if (dragParams.current !== null) {
             dragParams.current = null
-            removeCursorGrabbing()
+            graphSvgRef.current?.classList.remove("cursor_grabbing")
         }
-    }, [removeCursorGrabbing])
+    }, [])
 
     const handleMouseMove = useCallback((event: MouseEvent<SVGSVGElement>) => {
         if (dragParams.current !== null) {
