@@ -4,13 +4,13 @@ import { nodeWidth, nodeHeight } from "../model/svgParams"
 type SvgNodesParams = {
     nodesPositions: Map<number, { x: number; y: number }>
     graphColumns: Node[][]
-    setCursorGrabbing: () => void
+    startNodeDrag: (nodeId: number) => void
 }
 
 export function SvgNodes({
     nodesPositions,
     graphColumns,
-    setCursorGrabbing
+    startNodeDrag
 }: SvgNodesParams) {
     return graphColumns.map((column, cInd) => (
         <g key={cInd}>
@@ -27,7 +27,7 @@ export function SvgNodes({
                             width={nodeWidth}
                             onMouseDown={(event) => {
                                 event.preventDefault()
-                                setCursorGrabbing()
+                                startNodeDrag(node.id)
                             }}
                         ></rect>
                         <text
@@ -43,3 +43,4 @@ export function SvgNodes({
         </g>
     ))
 }
+

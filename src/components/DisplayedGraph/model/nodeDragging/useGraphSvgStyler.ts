@@ -1,12 +1,11 @@
-import { useRef, useCallback } from "react"
+import { useCallback } from "react"
 
-export function useGraphSvgStyler(): [
-    React.RefObject<SVGSVGElement>,
+export function useGraphSvgStyler(
+    graphSvgRef: React.RefObject<SVGSVGElement>
+): [
     () => void,
     () => void
 ] {
-    const graphSvgRef = useRef<SVGSVGElement>(null)
-
     const setCursorGrabbing = useCallback(() => {
         if (graphSvgRef.current) {
             graphSvgRef.current.classList.add("cursor_grabbing")
@@ -19,5 +18,5 @@ export function useGraphSvgStyler(): [
         }
     }, [])
 
-    return [graphSvgRef, setCursorGrabbing, removeCursorGrabbing]
+    return [setCursorGrabbing, removeCursorGrabbing]
 }

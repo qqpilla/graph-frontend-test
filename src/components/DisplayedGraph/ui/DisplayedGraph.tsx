@@ -3,15 +3,18 @@ import {
     useNodesPositions,
     useCalcViewSize,
 } from "../model/displayedGraphHooks"
-import { useGraphSvgStyler } from "../model/nodeDragging/useGraphSvgStyler"
+import { useNodeDrag } from "../model/nodeDragging/useNodeDrag"
 import { SvgNodes } from "./SvgNodes"
 import { SvgEdges } from "./SvgEdges"
+import { useRef } from "react"
 
 export function DisplayedGraph() {
     const [graphColumns, graphEdges] = useCurrentGraph()
     const [nodesPositions, setNodesPositions] = useNodesPositions(graphColumns)
     const { viewX, viewY } = useCalcViewSize(graphColumns)
-    const [graphSvgRef, setCursorGrabbing, removeCursorGrabbing] = useGraphSvgStyler()
+
+    const graphSvgRef = useRef<SVGSVGElement>(null)
+    const [startNodeDrag, stopNodeDrag, handleMouseMove] = useNodeDrag(graphSvgRef)
 
     return (
         <div className="graph-container">
@@ -21,17 +24,18 @@ export function DisplayedGraph() {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox={`0 0 ${viewX} ${viewY}`}
                     width={`${viewX}px`}
-                    onMouseUp={removeCursorGrabbing}
-                    onMouseLeave={removeCursorGrabbing}
+                    onMouseUp={stopNodeDrag}
+                    onMouseLeave={stopNodeDrag}
+                    onMouseMove={handleMouseMove}
                 >
-                    <SvgEdges
-                        nodesPositions={nodesPositions}
-                        graphEdges={graphEdges}
+                    <SvgEdges 
+                        nodesPositions={nodesPositions} 
+                        graphEdges={graphEdges} 
                     />
                     <SvgNodes
                         nodesPositions={nodesPositions}
                         graphColumns={graphColumns}
-                        setCursorGrabbing={setCursorGrabbing}
+                        startNodeDrag={startNodeDrag}
                     />
                 </svg>
             ) : (
