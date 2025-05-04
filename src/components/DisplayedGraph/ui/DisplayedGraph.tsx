@@ -10,14 +10,14 @@ import { useRef } from "react"
 
 export function DisplayedGraph() {
     const [graphColumns, graphEdges] = useCurrentGraph()
-    const [nodesPositions, setNodePosition] = useNodesPositions(graphColumns)
     const { viewX, viewY } = useCalcViewSize(graphColumns)
+    const [nodesPositions, setNodePosition] = useNodesPositions(graphColumns, viewX)
 
     const graphSvgRef = useRef<SVGSVGElement>(null)
     const [startNodeDrag, stopNodeDrag, handleMouseMove] = useNodeDrag(graphSvgRef, setNodePosition)
 
     return (
-        <div className="graph-container">
+        <div id="graph-container">
             {graphColumns.length ? (
                 <svg
                     ref={graphSvgRef}

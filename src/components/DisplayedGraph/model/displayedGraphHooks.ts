@@ -1,9 +1,9 @@
 import { Node, Edge } from "../../../shared/graph/interfaces"
 import { useGraphContext } from "../../../shared/graph"
-import { useMemo, useState, useEffect, useCallback } from "react"
+import { useMemo, useState, useEffect, useCallback, useRef } from "react"
 import { getGraphColumnsSorted } from "./getGraphColumns"
 import { getNodesPositions } from "./getNodesPositions"
-import { calcViewSize } from "./calcViewSize"
+import { calcViewSize, calcGraphWidth } from "./calcViewSize"
 
 export function useCurrentGraph(): [Node[][], Edge[]] {
     const { currentGraph } = useGraphContext()
@@ -18,13 +18,26 @@ export function useCurrentGraph(): [Node[][], Edge[]] {
 
 type PositionsMap = Map<number, {x: number, y: number}>
 
-export function useNodesPositions(graphColumns: Node[][]): [
+export function useNodesPositions(graphColumns: Node[][], viewWidth: number): [
     PositionsMap,
     (nodeId: number, newPos: { x: number, y: number }) => void
 ] {
     const [nodesPositions, setNodesPositions] = useState<PositionsMap>(new Map())
 
-    useEffect(() => setNodesPositions(getNodesPositions(graphColumns)), [graphColumns])
+    useEffect(() => {
+        const positions = getNodesPositions(graphColumns)
+        const graphWidth = calcGraphWidth(graphColumns.length)
+
+        // Центрируем граф по горизонтали
+        if (graphWidth < viewWidth) {
+            const offset = viewWidth / 2 - graphWidth / 2
+            positions.forEach((pos, key) => {
+                positions.set(key, { x: pos.x + offset, y: pos.y })
+            })
+        }
+
+        setNodesPositions(positions)
+    }, [graphColumns])
 
     const setNodePosition = useCallback(
         (nodeId: number, newPos: { x: number; y: number }) => {
@@ -44,5 +57,26 @@ export function useCalcViewSize(graphColumns: Node[][]): {
     viewX: number
     viewY: number
 } {
-    return useMemo(() => calcViewSize(graphColumns), [graphColumns])
+    const containerSize = useRef<{ x: number; y: number } | null>(null)
+
+    useEffect(() => {
+        const graphContainer = document.getElementById("graph-container")
+        if (graphContainer) {
+            containerSize.current = {
+                x: graphContainer.clientWidth,
+                y: graphContainer.clientHeight
+            }
+        }
+    }, [])
+
+    const {viewX, viewY} = useMemo(() => calcViewSize(graphColumns), [graphColumns])
+  
+    if (containerSize.current) {
+        return {
+            viewX: Math.max(containerSize.current.x, viewX),
+            viewY: Math.max(containerSize.current.y, viewY)
+        }
+    }
+
+    return { viewX, viewY }
 }

@@ -1,25 +1,32 @@
 :root {
-  --colorA: #fff6d3;
+  --colorA: #fffcf0;
   --colorB: #7c3f58;
   --colorC: #f9a875;
   --colorD: #eb6b6f;
 }
 
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--colorA);
+}
+
 .app-container {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
+  align-items: center;
 }
 
 .graph-list-container {
-  position: sticky;
-  top: 0;
-  background-color: var(--colorB);
+  width: 100%;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;  
+  background-color: var(--colorB);
 }
 
 .graph-list-container__loading {
@@ -52,13 +59,19 @@ select:open::picker-icon {
   rotate: 180deg;
 }
 
-.graph-container {
-  display: flex;
-  justify-content: center;
+#graph-container {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
 }
 
-.graph-container h2 {
+#graph-container h2 {
+  text-align: center;
   color: var(--colorB);
+}
+
+#graph-container svg {
+  display: block;
 }
 
 .node-rect {
@@ -84,4 +97,3 @@ select:open::picker-icon {
 .edge {
   stroke: var(--colorB);
 }
-

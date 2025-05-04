@@ -17,3 +17,11 @@ export function calcViewSize(graphColumns: Node[][]): {
 
     return { viewX, viewY }
 }
+
+export function calcGraphWidth(graphColumnsLength: number) {
+    return (
+        nodeWidth * graphColumnsLength +
+        nodesGap * (graphColumnsLength - 1) +
+        containerMargin * 2
+    ) 
+}
