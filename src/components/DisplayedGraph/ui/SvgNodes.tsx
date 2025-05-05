@@ -1,11 +1,11 @@
 import { Node } from "../../../shared/graph/interfaces"
-import { nodeWidth, nodeHeight } from "../model/svgParams"
-import type { dragParams } from "../model/useNodeDrag";
+import { nodeWidth, nodeHeight } from "../model/const/svgParams"
+import type { DragParams, PositionsMap } from "../model/const/types";
 
 type SvgNodesParams = {
-    nodesPositions: Map<number, { x: number; y: number }>
+    nodesPositions: PositionsMap
     graphColumns: Node[][]
-    startNodeDrag: ({ nodeId, startNodePos, startCursorPos }: dragParams) => void
+    startNodeDrag: ({ nodeId, startNodePos, startCursorPos }: DragParams) => void
 }
 
 export function SvgNodes({

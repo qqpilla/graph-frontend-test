@@ -1,5 +1,5 @@
-import { Graph, Node } from "../../../shared/graph/interfaces"
-import { sortByWeightedMedianHeuristic } from "../model/sortByWeightedMedianHeuristic"
+import { Graph, Node } from "../../../../shared/graph/interfaces"
+import { sortByWeightedMedianHeuristic } from "./sortByWeightedMedianHeuristic"
 
 export function getGraphColumnsSorted(graph: Graph) {
     return sortByWeightedMedianHeuristic(

@@ -1,4 +1,4 @@
-import { Edge, Node } from "../../../shared/graph/interfaces"
+import { Edge, Node } from "../../../../shared/graph/interfaces"
 
 // Алгоритм описан в статье:
 // IEEE TRANSACTIONS ON SOFTWARE ENGINEERING, VOL. 19, NO. 3, MARCH 1993

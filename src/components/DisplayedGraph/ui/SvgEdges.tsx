@@ -1,8 +1,9 @@
 import { Edge } from "../../../shared/graph/interfaces"
-import { nodeWidth, nodeHeight } from "../model/svgParams"
+import { PositionsMap } from "../model/const/types"
+import { nodeWidth, nodeHeight } from "../model/const/svgParams"
 
 type SvgEdgesParams = {
-    nodesPositions: Map<number, { x: number; y: number }>
+    nodesPositions: PositionsMap
     graphEdges: Edge[]
 }
 

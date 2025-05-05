@@ -1,9 +1,9 @@
 import {
+    useCalcNodesPositions,
     useCurrentGraph,
-    useNodesPositions,
     useCalcViewSize,
-} from "../model/displayedGraphHooks"
-import { useNodeDrag } from "../model/useNodeDrag"
+    useNodeDrag
+} from "../model/graphSetupHooks"
 import { SvgNodes } from "./SvgNodes"
 import { SvgEdges } from "./SvgEdges"
 import { useRef } from "react"
@@ -11,10 +11,12 @@ import { useRef } from "react"
 export function DisplayedGraph() {
     const [graphColumns, graphEdges] = useCurrentGraph()
     const { viewX, viewY } = useCalcViewSize(graphColumns)
-    const [nodesPositions, setNodePosition] = useNodesPositions(graphColumns, viewX)
+    const [nodesPositions, setNodePosition] = useCalcNodesPositions(graphColumns, viewX)
 
     const graphSvgRef = useRef<SVGSVGElement>(null)
     const [startNodeDrag, stopNodeDrag, handleMouseMove] = useNodeDrag(graphSvgRef, setNodePosition)
+
+    console.log("РЕРЕНДЕНР DISPLAYED GRAPH")
 
     return (
         <div id="graph-container">

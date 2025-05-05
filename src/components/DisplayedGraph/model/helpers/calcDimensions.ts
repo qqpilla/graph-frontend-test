@@ -1,5 +1,10 @@
-import { Node } from "../../../shared/graph/interfaces"
-import { nodeWidth, nodeHeight, nodesGap, containerMargin } from "./svgParams"
+import { Node } from "../../../../shared/graph/interfaces"
+import { 
+    nodeWidth, 
+    nodeHeight, 
+    nodesGap, 
+    containerMargin 
+} from "../const/svgParams"
 
 export function calcViewSize(graphColumns: Node[][]): {
     viewX: number

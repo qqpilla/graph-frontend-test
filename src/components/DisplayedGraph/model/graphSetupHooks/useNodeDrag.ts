@@ -1,23 +1,18 @@
 import { MouseEvent, useCallback, useRef } from "react"
-
-export type dragParams = {
-    nodeId: number,
-    startNodePos: {x: number, y: number},
-    startCursorPos: {x: number, y: number}
-}
+import { DragParams } from "../const/types"
 
 export function useNodeDrag(
     graphSvgRef: React.RefObject<SVGSVGElement>,
     setNodePosition: (nodeId: number, newPos: { x: number, y: number }) => void
 ): [
-    ({ nodeId, startNodePos, startCursorPos }: dragParams) => void, 
+    ({ nodeId, startNodePos, startCursorPos }: DragParams) => void, 
     () => void, 
     (event: MouseEvent<SVGSVGElement>) => void
 ] {
-    const dragParams = useRef<dragParams | null>(null)
+    const dragParams = useRef<DragParams | null>(null)
 
     const startNodeDrag = useCallback(
-        ({ nodeId, startNodePos, startCursorPos }: dragParams) => {
+        ({ nodeId, startNodePos, startCursorPos }: DragParams) => {
             dragParams.current = { nodeId, startNodePos, startCursorPos }
             graphSvgRef.current?.classList.add("cursor_grabbing")
         },

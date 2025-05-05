@@ -1,8 +1,14 @@
-import { Node } from "../../../shared/graph/interfaces"
-import { nodeWidth, nodeHeight, nodesGap, containerMargin } from "./svgParams"
+import { Node } from "../../../../shared/graph/interfaces"
+import { PositionsMap } from "../const/types";
+import { 
+    nodeWidth, 
+    nodeHeight, 
+    nodesGap, 
+    containerMargin 
+} from "../const/svgParams"
 
 export function getNodesPositions(graphColumns: Node[][]) {
-    const nodesPositions: Map<number, { x: number; y: number }> = new Map()
+    const nodesPositions: PositionsMap = new Map()
 
     graphColumns.forEach((column, cInd) => {
         column.forEach((node, nInd) => {
