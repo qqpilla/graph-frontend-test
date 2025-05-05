@@ -16,8 +16,6 @@ export function DisplayedGraph() {
     const graphSvgRef = useRef<SVGSVGElement>(null)
     const [startNodeDrag, stopNodeDrag, handleMouseMove] = useNodeDrag(graphSvgRef, setNodePosition)
 
-    console.log("РЕРЕНДЕНР DISPLAYED GRAPH")
-
     return (
         <div id="graph-container">
             {graphColumns.length ? (
