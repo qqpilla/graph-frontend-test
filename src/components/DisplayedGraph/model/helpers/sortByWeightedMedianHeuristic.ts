@@ -27,9 +27,12 @@ export function sortByWeightedMedianHeuristic(
     }
 
     for (let iteration = 0; iteration < numIterations; iteration++) {        
-        // На каждом втором проходе во время сортировки пробуем менять местами 
-        // соседние узлы в столбцах при одинаковых медианных значениях 
+        // На каждом втором проходе после сортировки по медианам пробуем
+        //  перемешивать узлы в столбцах при одинаковых медианных значениях
         const shouldShuffleEquals = iteration % 2 === 1
+        // На каждом втором проходе (но начиная с первого же) пробуем переставлять
+        // местами узлы, даже если это не уменшит число пересечений рёбер
+        const shouldSwitchEquals = !shouldShuffleEquals
         
         // Прямой проход
         for (let cInd = 1; cInd < graphColumns.length; cInd++) {
@@ -40,7 +43,7 @@ export function sortByWeightedMedianHeuristic(
                 shouldShuffleEquals
             )
         }
-        let countIntersections = trySwitchingNodes(graphColumns, graphEdges)
+        let countIntersections = trySwitchingNodes(graphColumns, graphEdges, shouldSwitchEquals)
         saveBest(countIntersections)
 
         // Обратный проход
@@ -52,7 +55,7 @@ export function sortByWeightedMedianHeuristic(
                 shouldShuffleEquals
             )
         }
-        countIntersections = trySwitchingNodes(graphColumns, graphEdges)
+        countIntersections = trySwitchingNodes(graphColumns, graphEdges, shouldSwitchEquals)
         saveBest(countIntersections)
     }
 
@@ -164,7 +167,7 @@ function calculateMedianPosition(
 
 // Попытка улучшить результат путём переставления соседних узлов во всех столбцах.
 // Возвращает общее количество пересечений рёбер во всём графе
-function trySwitchingNodes(graphColumns: Node[][], graphEdges: Edge[]): number {
+function trySwitchingNodes(graphColumns: Node[][], graphEdges: Edge[], shouldSwitchEquals: boolean): number {
     const maxIterationsWithoutImprovement = 5
     let iterationsWithoutImprovement = 0
     let hasImproved = true
@@ -193,7 +196,9 @@ function trySwitchingNodes(graphColumns: Node[][], graphEdges: Edge[]): number {
     // (перестановки без улучшений могут в итоге помочь выйти из локального оптимума и прийти в глобальный)
     // (это сложнее, но в идеале нужно допускать не только перестановки без улучшений, но и некоторое
     // количество перестановок, приводящих к ухудшению - так вероятность выйти из локального оптимума выше)
-    while (hasImproved || iterationsWithoutImprovement < maxIterationsWithoutImprovement) {
+    while (hasImproved || 
+        shouldSwitchEquals && iterationsWithoutImprovement < maxIterationsWithoutImprovement
+    ) {
         hasImproved = false
         hasSwitchedWithNoResult = false
         intersectionsCount = 0
@@ -224,7 +229,7 @@ function trySwitchingNodes(graphColumns: Node[][], graphEdges: Edge[]): number {
                     hasImproved = true
                     iterationsWithoutImprovement = 0
                     intersectionsWithPrevCount = intersectionsWithPrevNC
-                } else if (intersectionsNC === intersectionsCN) {
+                } else if (intersectionsNC === intersectionsCN && shouldSwitchEquals) {
                     hasSwitchedWithNoResult = true
                     intersectionsWithPrevCount = intersectionsWithPrevNC
                 } else {
@@ -241,8 +246,8 @@ function trySwitchingNodes(graphColumns: Node[][], graphEdges: Edge[]): number {
             if (hasSwitchedWithNoResult) {
                 iterationsWithoutImprovement++
             } else {
-                // Не случилось ни одной перестановки, т.к. они все
-                // увеличивали количество пересечений рёбер
+                // Не случилось ни одной перестановки, т.к. либо они все увеличивали 
+                // количество пересечений рёбер, либо shouldSwitchEquals === false
                 break
             }
         }
