@@ -9,12 +9,15 @@ export function getGraphColumnsSorted(graph: Graph) {
 }
 
 export function getGraphColumns(graph: Graph) {
+    const nodes = graph.nodes.toSorted((nodeA, nodeB) => nodeA.id - nodeB.id)
+    const edges = graph.edges
+
     const columns: Node[][] = []
-    let remainingNodesCount = graph.nodes.length
+    let remainingNodesCount = nodes.length
 
     // Первый столбец графа
     columns.push(
-        graph.nodes.filter((node) => !graph.edges.some((edge) => edge.toId === node.id))
+        nodes.filter((node) => !edges.some((edge) => edge.toId === node.id))
     )
     remainingNodesCount -= columns[0].length
 
@@ -24,9 +27,9 @@ export function getGraphColumns(graph: Graph) {
         const nextColumn: Node[] = []
 
         columns[fromColumnInd].forEach((fromNode) => {
-            const toNodes = graph.nodes.filter((node) =>
+            const toNodes = nodes.filter((node) =>
                 !nextColumn.includes(node) &&
-                graph.edges.some(
+                edges.some(
                     (edge) => edge.fromId === fromNode.id && edge.toId === node.id
                 )
             )
