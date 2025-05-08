@@ -7,29 +7,11 @@ import { Edge, Node } from "../../../../shared/graph/interfaces"
 export function sortByWeightedMedianHeuristic(
     graphColumns: Node[][],
     graphEdges: Edge[],
-    numIterations: number = 1,
+    numIterations: number = 10,
 ): Node[][] {
-    // Сортировка узлов в столбце с индексом cInd таким образом,
-    // чтобы они были как можно ближе к своим медианам из соседнего столбца
-    const columnPass = (cInd: number, prevCInd: number) => {
-        const medians: Map<number, number> = new Map()
-
-        graphColumns[cInd].forEach((node) => {
-            const nodeMedian = calculateMedianPosition(
-                node.id,
-                graphColumns[prevCInd],
-                graphEdges
-            )
-            medians.set(node.id, nodeMedian)
-        })
-
-        graphColumns[cInd].sort(
-            (nodeA, nodeB) => medians.get(nodeA.id)! - medians.get(nodeB.id)!
-        )
-    }
-
+    // Сохраняем текущий порядок узлов
     let bestOrder = structuredClone(graphColumns)
-    // Считаем изначальное количество пересечений рёбер в графе
+    // Считаем текущее количество пересечений рёбер во всём графе
     let bestCountIntersections = 0
     for (let cInd = 0; cInd < bestOrder.length - 1; cInd++) {
         bestCountIntersections += countEdgeIntersectionsOnColumns(
@@ -37,10 +19,7 @@ export function sortByWeightedMedianHeuristic(
         )
     }
     
-    const trySwitchingAndSaveBest = () => {
-        // Считаем количество пересечений после очередного прохода алгоритма
-        // и если оно уменьшилось, то сохраняем результат
-        let countIntersections = trySwitchingNodes(graphColumns, graphEdges)
+    const saveBest = (countIntersections: number) => {
         if (countIntersections < bestCountIntersections) {
             bestOrder = structuredClone(graphColumns)
             bestCountIntersections = countIntersections
@@ -48,20 +27,95 @@ export function sortByWeightedMedianHeuristic(
     }
 
     for (let iteration = 0; iteration < numIterations; iteration++) {        
+        // На каждом втором проходе во время сортировки пробуем менять местами 
+        // соседние узлы в столбцах при одинаковых медианных значениях 
+        const shouldShuffleEquals = iteration % 2 === 1
+        
         // Прямой проход
         for (let cInd = 1; cInd < graphColumns.length; cInd++) {
-            columnPass(cInd, cInd - 1)
+            sortColumnByMedians(
+                graphColumns[cInd],
+                graphColumns[cInd - 1],
+                graphEdges,
+                shouldShuffleEquals
+            )
         }
-        trySwitchingAndSaveBest()
+        let countIntersections = trySwitchingNodes(graphColumns, graphEdges)
+        saveBest(countIntersections)
 
         // Обратный проход
         for (let cInd = graphColumns.length - 2; cInd >= 0; cInd--) {
-            columnPass(cInd, cInd + 1)
+            sortColumnByMedians(
+                graphColumns[cInd],
+                graphColumns[cInd + 1],
+                graphEdges,
+                shouldShuffleEquals
+            )
         }
-        trySwitchingAndSaveBest()
+        countIntersections = trySwitchingNodes(graphColumns, graphEdges)
+        saveBest(countIntersections)
     }
 
-    return graphColumns
+    return bestOrder
+}
+
+// Сортировка узлов в столбце column по 
+// медианам из соседнего столбца prevColumn
+const sortColumnByMedians = (
+    column: Node[],
+    prevColumn: Node[],
+    graphEdges: Edge[],
+    shouldShuffleEquals: boolean
+) => {
+    const medians: Map<number, number> = new Map()
+
+    column.forEach((node) => {
+        const nodeMedian = calculateMedianPosition(
+            node.id,
+            prevColumn,
+            graphEdges
+        )
+        medians.set(node.id, nodeMedian)
+    })
+
+    column.sort(
+        (nodeA, nodeB) => medians.get(nodeA.id)! - medians.get(nodeB.id)!
+    )
+
+    const shuffleColumnSection = (start: number, end: number) => {
+        // Если узлов только 2, то гарантированно переставляем их
+        if (end - start === 1) {
+            [column[start], column[end]] = [column[end], column[start]]
+            return
+        }
+        
+        // Если узлов больше двух, то перемешиваем их.
+        // Современный алгоритм тасования Фишера-Йетса
+        for (let i = end; i > start; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [column[i], column[j]] = [column[j], column[i]]
+        }
+    }
+
+    if (shouldShuffleEquals) {
+        // Находим множества стоящих подряд по 2 или более узлов 
+        // с одинаковыми медианными значениями и перемешиваем их
+        let start = 0
+        while (start < column.length - 1) {
+            let end = start + 1
+            const medianOfStart = medians.get(column[start].id)!
+            
+            while (end < column.length && medianOfStart === medians.get(column[end].id)!) {
+                end++
+            }
+
+            if (end - start > 1) {
+                shuffleColumnSection(start, end - 1)
+            }
+
+            start = end
+        }
+    }
 }
 
 // Поиск медианы для узла с id === nodeId по соседнему столбцу neighbours
