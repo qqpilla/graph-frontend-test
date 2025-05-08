@@ -269,6 +269,12 @@ const countEdgeIntersectionsOnColumns = (
             const edgeA = edges[i]
             const edgeB = edges[j]
 
+            if (edgeA.fromId === edgeB.fromId || 
+                edgeA.toId === edgeB.toId
+            ) {
+                continue
+            }
+
             // Индексы (позиции) концов рёбер в столбцах
             const edgeANodeFromPosition = columnFrom.findIndex((node) => node.id === edgeA.fromId)
             const edgeANodeToPosition = columnTo.findIndex((node) => node.id === edgeA.toId)
